@@ -1,5 +1,5 @@
 // src/screens/LoginScreen.tsx
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -10,29 +10,52 @@ import {
   KeyboardAvoidingView,
   Platform,
   StatusBar,
-} from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+} from "react-native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 // mesmo names usados no App.js
 type RootStackParamList = {
   Welcome: undefined;
   Login: undefined;
   RegisterAluno: undefined;
-  Saldo: undefined;      // <- adiciona a rota de saldo
-  // outras telas se quiser
+  Saldo: undefined; // <- adiciona a rota de saldo
 };
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
+type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const [email, setEmail] = React.useState('');
-  const [senha, setSenha] = React.useState('');
+  const [email, setEmail] = React.useState("");
+  const [senha, setSenha] = React.useState("");
+  const [errorMessage, setErrorMessage] = React.useState("");
 
   const isButtonDisabled = !email || !senha;
 
   const handleLogin = () => {
-    // aqui você pode colocar validação/autenticação depois
-    navigation.navigate('Saldo');
+    const emailCorreto = "lucas.alm.bsb@gmail.com";
+    const senhaCorreta = "123456*";
+
+    // Reseta o erro antes de validar
+    setErrorMessage("");
+
+    if (email.trim() !== emailCorreto) {
+      setErrorMessage("Por favor, insira um email válido.");
+      return;
+    }
+
+    if (senha.trim().length < 6 || !/\d/.test(senha)) {
+      setErrorMessage(
+        "A senha deve ter mais de 6 caracteres e conter pelo menos um número.",
+      );
+      return;
+    }
+
+    if (senha !== senhaCorreta) {
+      setErrorMessage("Por favor, insira a senha correta.");
+      return;
+    }
+
+    // Login bem-sucedido
+    navigation.navigate("Saldo");
   };
 
   return (
@@ -40,14 +63,14 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <StatusBar barStyle="light-content" />
       <KeyboardAvoidingView
         style={styles.keyboardContainer}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <View style={styles.content}>
           {/* Logo centralizado */}
           <View style={styles.logoContainer}>
             <View style={styles.logoWrapper}>
               <Image
-                source={require('../../assets/logo.png')}
+                source={require("../../assets/logo.png")}
                 style={styles.logo}
                 resizeMode="contain"
               />
@@ -86,10 +109,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
           {/* Botão Entrar */}
           <TouchableOpacity
-            style={[
-              styles.button,
-              isButtonDisabled && styles.buttonDisabled,
-            ]}
+            style={[styles.button, isButtonDisabled && styles.buttonDisabled]}
             activeOpacity={0.7}
             disabled={isButtonDisabled}
             onPress={handleLogin}
@@ -111,19 +131,24 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           <TouchableOpacity
             style={styles.secondaryButton}
             activeOpacity={0.7}
-            onPress={() => navigation.navigate('RegisterAluno')}
+            onPress={() => navigation.navigate("RegisterAluno")}
           >
             <Text style={styles.secondaryButtonText}>Criar nova conta</Text>
           </TouchableOpacity>
+
+          {/* Mensagem de erro */}
+          {errorMessage ? (
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          ) : null}
         </View>
       </KeyboardAvoidingView>
     </View>
   );
 };
 
-const GREEN_BACKGROUND = '#12B24E';
-const GREEN_DARK = '#0C7F38';
-const WHITE = '#FFFFFF';
+const GREEN_BACKGROUND = "#12B24E";
+const GREEN_DARK = "#0C7F38";
+const WHITE = "#FFFFFF";
 
 const styles = StyleSheet.create({
   container: {
@@ -136,19 +161,19 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 28,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   logoContainer: {
-    alignItems: 'center',
-    marginBottom: 32,
+    alignItems: "center",
+    marginBottom: 5,
   },
   logoWrapper: {
-    width: 120,
-    height: 120,
-    borderRadius: 24,
+    width: 90,
+    height: 90,
+    borderRadius: 10,
     backgroundColor: GREEN_DARK,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
     width: 80,
@@ -156,13 +181,13 @@ const styles = StyleSheet.create({
   },
   title: {
     marginTop: 16,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 28,
-    fontWeight: '700',
+    fontWeight: "700",
     color: WHITE,
   },
   fieldContainer: {
-    marginTop: 22,
+    marginTop: 10,
   },
   label: {
     color: WHITE,
@@ -175,43 +200,54 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
+    borderWidth: 1, // ← espessura da borda
+    borderColor: "#000", // ← cor da borda
   },
   button: {
     marginTop: 26,
     borderRadius: 10,
-    paddingVertical: 16,
-    alignItems: 'center',
+    paddingVertical: 13,
+    alignItems: "center",
     backgroundColor: GREEN_DARK,
   },
   buttonDisabled: {
-    backgroundColor: '#A4D8B5',
+    backgroundColor: "#A4D8B5",
   },
   buttonText: {
     color: WHITE,
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   buttonTextDisabled: {
-    color: '#5F8F6B',
+    color: "#5F8F6B",
   },
   subText: {
-    marginTop: 26,
-    textAlign: 'center',
+    marginTop: 15,
+    textAlign: "center",
     color: WHITE,
-    fontSize: 15,
+    fontSize: 16,
+    fontWeight: "bold",
   },
   secondaryButton: {
     marginTop: 16,
     paddingVertical: 14,
     borderRadius: 10,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: WHITE,
-    alignItems: 'center',
+    alignItems: "center",
+    width: "50%",
+    alignSelf: "center",
   },
   secondaryButtonText: {
     color: WHITE,
     fontSize: 17,
-    fontWeight: '500',
+    fontWeight: "500",
+  },
+  errorText: {
+    marginTop: 16,
+    textAlign: "center",
+    color: WHITE,
+    fontSize: 15,
   },
 });
 

@@ -14,7 +14,7 @@ export default function SaldoScreen({ navigation }) {
   const { saldo } = useSaldoViewModel();
 
   const saldoResgate = 148.33; // temporário para visual
-  const saldoPendente = 0.0;
+  const saldoPendente = 0.00; // valor para teste
 
   // Lista de lançamentos simulada
   const lancamentos = [
@@ -38,7 +38,7 @@ export default function SaldoScreen({ navigation }) {
         </View>
         <TouchableOpacity
           style={styles.menuButton}
-          onPress={() => navigation.navigate("Menu")}
+          onPress={() => navigation.navigate("Profile")}
         >
           <View style={styles.profileCircle}>
             <Ionicons name="person" size={28} color="#12B24E" />
@@ -84,7 +84,14 @@ export default function SaldoScreen({ navigation }) {
           activeOpacity={0.8}
           onPress={() => navigation.navigate(" ")}
         >
-          <Text style={styles.qrButtonText}>Gerar QRCode</Text>
+          <Text
+            style={[
+              styles.qrButtonText,
+              { color: saldoPendente === 0 ? "#33333378" : "#333" },
+            ]}
+          >
+            Gerar QRCode
+          </Text>
         </TouchableOpacity>
 
         <Text style={styles.obsText}>
@@ -137,7 +144,7 @@ export default function SaldoScreen({ navigation }) {
 const GREEN_BACKGROUND = "#12B24E";
 const DARK_GREEN = "#007F3B";
 const WHITE = "#FFFFFF";
-const GREEN_DARK = '#0C7F38';
+const GREEN_DARK = "#0C7F38";
 
 const styles = StyleSheet.create({
   container: {
@@ -163,7 +170,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     color: WHITE,
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   headerSubtitle: {
     color: WHITE,
@@ -174,16 +181,13 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 12,
     backgroundColor: GREEN_DARK,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 2,
   },
   menuButton: {
     marginLeft: "auto",
     padding: 4,
-  },
-  profileButton: {
-    marginLeft: "auto",
   },
   profileCircle: {
     width: 38,
@@ -193,7 +197,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 2,
-    borderColor: "#A7E9B9", // leve contorno verde claro como na imagem
+    borderColor: "#A7E9B9",
   },
 
   // CONTEÚDO CENTRAL
@@ -201,7 +205,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 30,
     paddingHorizontal: 20,
-    marginTop: 50,
+    marginTop: 90,
   },
   saldoInfo: {
     color: WHITE,
@@ -255,7 +259,6 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
   qrButtonText: {
-    color: "#333",
     fontSize: 16,
     fontWeight: "600",
     textAlign: "center",

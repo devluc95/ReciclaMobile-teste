@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,23 +7,60 @@ import {
   Image,
   TextInput,
   FlatList,
-} from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
+  Alert,
+} from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import * as ImagePicker from "expo-image-picker";
 
-const materialTabs = ['Plastico', 'Papel', 'Vidro', 'Metal', 'Organico'];
+const materialTabs = ["Plastico", "Papel", "Vidro", "Metal", "Organico"];
 
 const RegisterWasteScreen: React.FC = ({ navigation }: any) => {
-  const [selectedTab, setSelectedTab] = useState('Plastico');
-  const [unidade, setUnidade] = useState('');
+  const [selectedTab, setSelectedTab] = useState("Plastico");
+  const [unidade, setUnidade] = useState("");
   const [itens, setItens] = useState<{ tipo: string; quantidade: string }[]>([]);
+  const [photo, setPhoto] = useState<string | null>(null);
 
-  const logo = require('../../assets/logo.png');
+  const logo = require("../../assets/logo.png");
+
+  // Função para abrir a câmera
+  const handleTakePhoto = async () => {
+    // Solicita permissão para usar a câmera
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permissão negada",
+        "É necessário permitir o acesso à câmera para tirar fotos."
+      );
+      return;
+    }
+
+    // Abre a câmera
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+      Alert.alert("📸 Sucesso!", "Foto capturada com sucesso!");
+    }
+  };
 
   const handleAddItem = () => {
     if (!unidade.trim()) return;
     const novoItem = { tipo: selectedTab, quantidade: unidade };
     setItens((prev) => [...prev, novoItem]);
-    setUnidade('');
+    setUnidade("");
+  };
+
+  const handleRemoveItem = (index: number) => {
+    setItens((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleClearList = () => {
+    setItens([]);
   };
 
   return (
@@ -42,7 +79,7 @@ const RegisterWasteScreen: React.FC = ({ navigation }: any) => {
 
         <TouchableOpacity
           style={styles.profileButton}
-          onPress={() => navigation.navigate('Menu')}
+          onPress={() => navigation.navigate("Profile")}
         >
           <View style={styles.profileCircle}>
             <Ionicons name="person" size={28} color="#12B24E" />
@@ -90,7 +127,11 @@ const RegisterWasteScreen: React.FC = ({ navigation }: any) => {
         </View>
 
         {/* BOTÃO TIRAR FOTO */}
-        <TouchableOpacity style={styles.photoButton} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={styles.photoButton}
+          activeOpacity={0.8}
+          onPress={handleTakePhoto}
+        >
           <Ionicons
             name="camera-outline"
             size={22}
@@ -102,32 +143,61 @@ const RegisterWasteScreen: React.FC = ({ navigation }: any) => {
 
         {/* ITENS ADICIONADOS */}
         <View style={styles.itensInfo}>
-          <Text style={styles.itensTitle}>
-            Itens adicionados {itens.length}/10
-          </Text>
+          <View style={styles.itensHeader}>
+            <Text style={styles.itensTitle}>
+              Itens adicionados {itens.length}/10
+            </Text>
+            {itens.length > 0 && (
+              <TouchableOpacity
+                style={styles.clearButton}
+                onPress={handleClearList}
+              >
+                <Text style={styles.clearButtonText}>Limpar lista</Text>
+              </TouchableOpacity>
+            )}
+          </View>
 
           {itens.length === 0 ? (
             <Text style={styles.itensSubtitle}>
               Nenhum item na lista. Adicione itens e depois finalize o cadastro.
             </Text>
           ) : (
-            <FlatList
-              data={itens}
-              keyExtractor={(_, i) => i.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.itemLinha}>
-                  <Ionicons
-                    name="checkmark-circle"
-                    size={18}
-                    color="#A7E9B9"
-                    style={{ marginRight: 6 }}
-                  />
-                  <Text style={styles.itemTexto}>
-                    {item.tipo} — {item.quantidade} Un
-                  </Text>
-                </View>
-              )}
-            />
+            <View style={styles.listaItensWrapper}>
+              <FlatList
+                data={itens}
+                keyExtractor={(_, i) => i.toString()}
+                showsVerticalScrollIndicator={true}
+                renderItem={({ item, index }) => (
+                  <View style={styles.itemCard}>
+                    <View style={styles.itemInfo}>
+                      <Ionicons
+                        name="leaf"
+                        size={20}
+                        color="#12B24E"
+                        style={{ marginRight: 8 }}
+                      />
+                      <View>
+                        <Text style={styles.itemTipo}>{item.tipo}</Text>
+                        <Text style={styles.itemQuantidade}>
+                          {item.quantidade} Un
+                        </Text>
+                      </View>
+                    </View>
+
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={() => handleRemoveItem(index)}
+                    >
+                      <Ionicons
+                        name="trash-outline"
+                        size={22}
+                        color="#12B24E"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                )}
+              />
+            </View>
           )}
         </View>
 
@@ -150,7 +220,7 @@ const RegisterWasteScreen: React.FC = ({ navigation }: any) => {
         <TouchableOpacity
           style={styles.tabItem}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate('Saldo')}
+          onPress={() => navigation.navigate("Saldo")}
         >
           <Ionicons name="home" size={28} color="#fff" />
           <Text style={styles.tabLabel}>Saldo</Text>
@@ -159,7 +229,7 @@ const RegisterWasteScreen: React.FC = ({ navigation }: any) => {
         <TouchableOpacity
           style={styles.tabItem}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate('RegisterWaste')}
+          onPress={() => navigation.navigate("RegisterWaste")}
         >
           <Ionicons name="leaf" size={28} color="#7FFFD4" />
           <Text style={[styles.tabLabel, styles.tabLabelActive]}>
@@ -170,7 +240,7 @@ const RegisterWasteScreen: React.FC = ({ navigation }: any) => {
         <TouchableOpacity
           style={styles.tabItem}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate('Extrato')}
+          onPress={() => navigation.navigate("Extrato")}
         >
           <Ionicons name="time-outline" size={28} color="#fff" />
           <Text style={styles.tabLabel}>Históricos</Text>
@@ -179,7 +249,7 @@ const RegisterWasteScreen: React.FC = ({ navigation }: any) => {
         <TouchableOpacity
           style={styles.tabItem}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate('ConfirmWaste')}
+          onPress={() => navigation.navigate("ConfirmWaste")}
         >
           <Ionicons name="card-outline" size={28} color="#fff" />
           <Text style={styles.tabLabel}>Resgatar</Text>
@@ -189,9 +259,9 @@ const RegisterWasteScreen: React.FC = ({ navigation }: any) => {
   );
 };
 
-const GREEN_BACKGROUND = '#12B24E';
-const GREEN_DARK = '#0C7F38';
-const WHITE = '#FFFFFF';
+const GREEN_BACKGROUND = "#12B24E";
+const GREEN_DARK = "#0C7F38";
+const WHITE = "#FFFFFF";
 
 const styles = StyleSheet.create({
   container: {
@@ -201,22 +271,22 @@ const styles = StyleSheet.create({
 
   // HEADER
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingTop: 45,
     paddingHorizontal: 20,
   },
   headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   headerLogoWrapper: {
     width: 40,
     height: 40,
     borderRadius: 12,
     backgroundColor: GREEN_DARK,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 10,
   },
   logo: {
@@ -224,12 +294,12 @@ const styles = StyleSheet.create({
     height: 35,
   },
   headerTextWrapper: {
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   headerTitle: {
     color: WHITE,
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   headerSubtitle: {
     color: WHITE,
@@ -237,17 +307,17 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   profileButton: {
-    marginLeft: 'auto',
+    marginLeft: "auto",
   },
   profileCircle: {
     width: 38,
     height: 38,
     borderRadius: 24,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
     borderWidth: 2,
-    borderColor: '#A7E9B9',
+    borderColor: "#A7E9B9",
   },
 
   // CONTEÚDO
@@ -261,35 +331,35 @@ const styles = StyleSheet.create({
   tabsContainer: {
     marginTop: 10,
     marginBottom: 18,
-    alignItems: 'center',
+    alignItems: "center",
   },
   tabsBackground: {
-    flexDirection: 'row',
+    flexDirection: "row",
     backgroundColor: GREEN_DARK,
     borderRadius: 25,
     paddingVertical: 4,
     paddingHorizontal: 4,
-    justifyContent: 'space-between',
-    width: '95%',
+    justifyContent: "space-between",
+    width: "95%",
   },
   tabButton: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 20,
     paddingVertical: 6,
   },
   tabButtonActive: {
-    backgroundColor: '#BFEBC9',
+    backgroundColor: "#BFEBC9",
   },
   tabText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   tabTextActive: {
     color: GREEN_DARK,
-    fontWeight: '700',
+    fontWeight: "700",
   },
 
   // CAMPOS
@@ -299,26 +369,28 @@ const styles = StyleSheet.create({
   label: {
     color: WHITE,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 6,
   },
   inputBigWrapper: {
-    backgroundColor: '#E8F6EA',
+    backgroundColor: "#E8F6EA",
     borderRadius: 10,
     height: 55,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: 16,
+    borderWidth: 1, // ← espessura da borda
+    borderColor: "#000", // ← cor da borda
   },
   inputBig: {
     fontSize: 18,
-    color: '#4d4d4d',
+    color: "#4d4d4d",
   },
 
   // BOTÃO FOTO
   photoButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
     backgroundColor: GREEN_DARK,
     borderRadius: 14,
     paddingVertical: 12,
@@ -329,31 +401,70 @@ const styles = StyleSheet.create({
   photoButtonText: {
     color: WHITE,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 
-  // ITENS
+  // ITENS ADICIONADOS
   itensInfo: {
     marginBottom: 16,
+  },
+  itensHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   itensTitle: {
     color: WHITE,
     fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 6,
+    fontWeight: "700",
+  },
+  clearButton: {
+    borderWidth: 1,
+    borderColor: "#fff",
+    borderRadius: 10,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+  },
+  clearButtonText: {
+    color: WHITE,
+    fontWeight: "600",
   },
   itensSubtitle: {
     color: WHITE,
     fontSize: 14,
+    marginTop: 8,
   },
-  itemLinha: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 4,
+  listaItensWrapper: {
+    height: 180,
+    marginTop: 8,
   },
-  itemTexto: {
-    color: WHITE,
+  itemCard: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#e8f6ea6e",
+    borderRadius: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+  },
+  itemInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  itemTipo: {
+    color: "#FFFFFF",
     fontSize: 16,
+    fontWeight: "700",
+  },
+  itemQuantidade: {
+    color: "#FFFFFF",
+    fontSize: 14,
+  },
+  deleteButton: {
+    backgroundColor: "#DFF5E0",
+    borderRadius: 10,
+    padding: 6,
   },
 
   // BOTÕES PRINCIPAIS
@@ -367,23 +478,23 @@ const styles = StyleSheet.create({
   mainButtonText: {
     color: GREEN_BACKGROUND,
     fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
+    fontWeight: "600",
+    textAlign: "center",
   },
 
   // TAB BAR FLUTUANTE
   tabBar: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
-    left: '5%',
-    right: '5%',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    left: "5%",
+    right: "5%",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
     backgroundColor: GREEN_DARK,
     paddingVertical: 8,
     borderRadius: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 5,
@@ -394,12 +505,12 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontSize: 12,
-    color: '#fff',
+    color: "#fff",
     marginTop: 2,
   },
   tabLabelActive: {
-    color: '#7FFFD4',
-    fontWeight: '600',
+    color: "#7FFFD4",
+    fontWeight: "600",
   },
 });
 

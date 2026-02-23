@@ -5,16 +5,16 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      {/* Header simples com Voltar */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backRow}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-          <Text style={styles.backText}>Voltar</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Botão Voltar (idêntico ao da imagem) */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+        activeOpacity={0.8}
+      >
+        <View style={styles.backCircle}>
+          <Ionicons name="arrow-back" size={26} color="#fff" />
+        </View>
+      </TouchableOpacity>
 
       {/* Avatar grande */}
       <View style={styles.avatarWrapper}>
@@ -24,7 +24,7 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           </View>
         </View>
         <Text style={styles.userName}>Nome do Usuário</Text>
-        <Text style={styles.userEmail}>sousapatrick538@gmail.com</Text>
+        <Text style={styles.userEmail}>lucas.alm.bsb@gmail.com</Text>
       </View>
 
       {/* Botões */}
@@ -32,16 +32,10 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         style={styles.button}
         onPress={() => navigation.navigate('EditProfile')}
       >
-        <Ionicons
-          name="pencil"
-          size={22}
-          color="#12B24E"
-          style={styles.leftIcon}
-        />
+        <Ionicons name="pencil" size={22} color="#12B24E" style={styles.leftIcon} />
         <Text style={styles.buttonText}>Editar dados</Text>
       </TouchableOpacity>
 
-      {/* Central de segurança -> SecurityCenterScreen */}
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('SecurityCenter')}
@@ -55,25 +49,15 @@ const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Text style={styles.buttonText}>Central de segurança</Text>
       </TouchableOpacity>
 
-      {/* Instagram -> FollowInstagramScreen */}
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('FollowInstagram')}
       >
-        <Ionicons
-          name="logo-instagram"
-          size={22}
-          color="#12B24E"
-          style={styles.leftIcon}
-        />
+        <Ionicons name="logo-instagram" size={22} color="#12B24E" style={styles.leftIcon} />
         <Text style={styles.buttonText}>Instagram</Text>
       </TouchableOpacity>
 
-      {/* Sair -> LoginScreen */}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('Login')}
-      >
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
         <Text style={styles.buttonText}>Sair</Text>
       </TouchableOpacity>
     </View>
@@ -87,33 +71,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: GREEN_BACKGROUND,
-    paddingTop: 40,
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
   },
 
-  /* Header Voltar */
-  header: {
-    marginBottom: 30,
+  // Botão de voltar no topo
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 10,
   },
-  backRow: {
-    flexDirection: 'row',
+  backCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)', // translúcido
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  backText: {
-    color: WHITE,
-    fontSize: 20,
-    marginLeft: 8,
-  },
 
-  /* Avatar e informações */
+  // Avatar e informações
   avatarWrapper: {
     alignItems: 'center',
-    marginTop: 30,
-    marginBottom: 26,
+    marginTop: 140,
+    marginBottom: 50,
   },
   avatarCircleOuter: {
-    width: 120,
-    height: 120,
+    width: 80,
+    height: 80,
     borderRadius: 60,
     borderWidth: 6,
     borderColor: WHITE,
@@ -122,8 +107,8 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   avatarCircleInner: {
-    width: 84,
-    height: 84,
+    width: 60,
+    height: 60,
     borderRadius: 42,
     backgroundColor: WHITE,
     justifyContent: 'center',
@@ -140,14 +125,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  /* Botões */
+  // Botões
   button: {
     backgroundColor: WHITE,
-    borderRadius: 16,
-    paddingVertical: 14,
+    borderRadius: 12,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 12,
   },
   leftIcon: {

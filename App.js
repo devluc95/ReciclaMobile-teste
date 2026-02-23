@@ -19,6 +19,9 @@ import ProfileScreen from "./src/views/ProfileScreen";
 import SecurityCenterScreen from "./src/views/SecurityCenterScreen";
 import EditProfileScreen from "./src/views/EditProfileScreen";
 import MenuScreen from "./src/views/MenuScreen";
+import DetalhesResiduos from "./src/views/DetalhesResiduos";
+
+
 
 const Stack = createNativeStackNavigator();
 
@@ -56,6 +59,7 @@ export default function App() {
         <Stack.Screen name="RegisterWaste" component={RegisterWasteScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Menu" component={MenuScreen} />
+        <Stack.Screen name="Detalhes" component={DetalhesResiduos} />
 
         {/* Telas adicionais */}
         <Stack.Screen
